@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Calificaciones</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+    }
+    #resultado {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background: #f0f0f0;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Sistema de Calificaciones</h1>
+
+  <label>Nombre del alumno:</label><br>
+  <input type="text" id="nombre"><br>
+
+  <label>Materia:</label><br>
+  <input type="text" id="materia"><br>
+
+  <label>Nota:</label><br>
+  <input type="number" id="nota" min="1" max="10"><br>
+
+  <button onclick="agregarOModificarNota()">Agregar / Modificar Nota</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    let alumnos = [
+      ['Juan', [['Matematicas', 8], ['Lengua', 9], ['Sociales', 7], ['Naturales', 7]]],
+      ['Ana', [['Lengua', 9], ['Matematicas', 10], ['Sociales', 8], ['Naturales', 6]]],
+      ['Luis', [['Lengua', 6], ['Sociales', 8], ['Matematicas', 7], ['Naturales', 6]]],
+      ['María', [['Lengua', 9], ['Sociales', 10], ['Naturales', 10], ['Matematicas', 9]]]
+    ];
+
+    function buscarAlumno(nombre) {
+      return alumnos.find(alumno => alumno[0].toLowerCase() === nombre.toLowerCase());
+    }
+
+    function agregarOModificarNota() {
+      const nombre = document.getElementById('nombre').value.trim();
+      const materia = document.getElementById('materia').value.trim();
+      const nota = parseInt(document.getElementById('nota').value);
+
+      if (!nombre || !materia || isNaN(nota)) {
+        alert("Por favor, completa todos los campos correctamente.");
+        return;
+      }
+
+      let alumno = buscarAlumno(nombre);
+      let mensaje = "";
+
+      if (alumno) {
+        mensaje += `👤 El alumno ${nombre} ya existe.\n`;
+        let materias = alumno[1];
+        let materiaExistente = materias.find(m => m[0].toLowerCase() === materia.toLowerCase());
+        if (materiaExistente) {
+          mensaje += `✏️ Actualizando nota de ${materia} de ${materiaExistente[1]} a ${nota}.\n`;
+          materiaExistente[1] = nota;
+        } else {
+          mensaje += `➕ Agregando nueva materia ${materia} con nota ${nota}.\n`;
+          materias.push([materia, nota]);
+        }
+      } else {
+        mensaje += `🆕 Agregando alumno nuevo: ${nombre} con ${materia}: ${nota}.\n`;
+        alumnos.push([nombre, [[materia, nota]]]);
+      }
+
+      mostrarResultado(mensaje + mostrarAlumnos());
+    }
+
+    function mostrarAlumnos() {
+      let texto = "\n📋 Lista actualizada de alumnos:\n";
+      for (let [nombre, materias] of alumnos) {
+        texto += `- ${nombre}:\n`;
+        for (let [mat, nota] of materias) {
+          texto += `   • ${mat}: ${nota}\n`;
+        }
+      }
+      return texto;
+    }
+
+    function mostrarResultado(texto) {
+      document.getElementById('resultado').textContent = texto;
+    }
+  </script>
+</body>
+</html>
